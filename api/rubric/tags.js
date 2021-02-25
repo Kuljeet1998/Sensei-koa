@@ -1,8 +1,8 @@
-const config = require('../knexfile.js')
+const config = require('../../knexfile.js')
 const knex = require('knex')(config)
 
 const Router = require('koa-router');
-const generate_uuid = require('../utils/uuid.js');
+const generate_uuid = require('../../utils/uuid.js');
 
 const router = new Router({
     prefix: '/tags'
@@ -18,7 +18,8 @@ router.get("/", async (ctx) => {
     };
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -34,14 +35,14 @@ router.post("/", async (ctx) => {
     else
     {   
         const uuid1 = await generate_uuid.fn();
-        console.log("uuid",uuid1)
         ctx.request.body.id = uuid1
         var user = await knex('tag').insert(ctx.request.body)
         var resp = await knex('tag').select('*').where({id: uuid1});
         ctx.body = {data:resp}
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -61,7 +62,8 @@ router.get("/:id", async (ctx) => {
     }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -73,7 +75,8 @@ router.put('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -84,6 +87,7 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 204
+    ctx.body = {error:err}
   }
 })

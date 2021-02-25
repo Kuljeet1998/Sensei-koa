@@ -1,14 +1,14 @@
-const config = require('../knexfile.js')
+const config = require('../../knexfile.js')
 const knex = require('knex')(config)
 
 const Router = require('koa-router');
-const generate_uuid = require('../utils/uuid.js');
+const generate_uuid = require('../../utils/uuid.js');
 
 const router = new Router({
     prefix: '/propositions'
 });
 
-const page_details = require('../utils/page_details.js')
+const page_details = require('../../utils/page_details.js')
 
 module.exports = router;
 const paginate = require('koa-ctx-paginate')
@@ -37,7 +37,8 @@ router.get("/",  async (ctx) => {
         }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -60,7 +61,8 @@ router.post("/", async (ctx) => {
         ctx.body = {data:resp}
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -80,7 +82,8 @@ router.get("/:id", async (ctx) => {
     }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -93,7 +96,8 @@ router.put('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -104,6 +108,7 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 204
+    ctx.body = {error:err}
   }
 })

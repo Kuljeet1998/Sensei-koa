@@ -8,18 +8,22 @@ const router = new Router({
     prefix: '/evidences'
 });
 
+let get_m2m = require('../../utils/evidence_dependencies.js');
 module.exports = router;
 
 router.get("/", async (ctx) => {
   try {
     const evidences = await knex('Evidence').select('*');
+    var evidences_w_dependencies = await get_m2m.evidence_w_dependencies(evidences)
 
     ctx.body = {
-      data: evidences
+      data: evidences_w_dependencies
     };
     
   } catch (err) {
+    ctx.status = 404
     console.log(err)
+    ctx.body = {error:err}
   }
 })
 
@@ -29,8 +33,7 @@ router.post("/", async (ctx) => {
     if (
         !ctx.request.body.name ||
         !ctx.request.body.observee_id ||
-        !ctx.request.body.indicators_data ||
-        !ctx.request.body.ratings
+        !ctx.request.body.indicators_data
     ) {
         ctx.response.status = 400;
         ctx.body = 'Please enter the data';
@@ -40,25 +43,23 @@ router.post("/", async (ctx) => {
         const uuid1 = await generate_uuid.fn();
         ctx.request.body.id = uuid1
 
-        var indicators = ctx.request.body.indicators_data.indicators
         var attachments = ctx.request.body.attachments
-        var ratings = ctx.request.body.indicators_data.ratings
+        var rated_indicators = ctx.request.body.indicators_data
 
-        delete ctx.request.body["indicators"];
         delete ctx.request.body["attachments"];
-        delete ctx.request.body["ratings"];
+        delete ctx.request.body["indicators_data"];
 
-        var observation = await knex('Evidence').insert(ctx.request.body)
+        var evidence = await knex('Evidence').insert(ctx.request.body)
         var resp = await knex('Evidence').select('*').where({id: uuid1});
 
-        indicator_length = indicators.length
-        if(indicator_length!=0)
+        rated_indicators_length = rated_indicators.length
+        if(rated_indicators_length!=0)
         {
-            for(var i=0;i<indicator_length;i++)
+            for(var i=0;i<rated_indicators_length;i++)
             {
                 const new_uuid = await generate_uuid.fn();
-                var evidence_indicator = {id:new_uuid, indicator_id:indicators[i], evidence_id:uuid1}
-                var evidence_indi = await knex('evidence_indicators').insert(evidence_indicator)
+                var indicator_rating = {id:new_uuid, indicator_id:rated_indicators[i]['indicator'], evidence_id:uuid1, rating_id:rated_indicators[i]['rating']}
+                var indi_rating = await knex('IndicatorRating').insert(indicator_rating)
             }
         }
 
@@ -69,60 +70,110 @@ router.post("/", async (ctx) => {
             {
                 const new_uuid = await generate_uuid.fn();
                 var evidence_attachment = {id:new_uuid, attachment_id:attachments[i], evidence_id:uuid1}
-                var evidence_att = await knex('evidence_indicators').insert(evidence_attachment)
+                var evidence_att = await knex('evidence_attachments').insert(evidence_attachment)
             }
         }
 
-        rating_length = ratings.length
-        if(rating_length!=0)
-        {
-            for(var i=0;i<rating_length;i++)
-            {
-                const new_uuid = await generate_uuid.fn();
-                var indicator_rating = {id:new_uuid, indicator_id:ratings[i]['indicator'], evidence_id:uuid1, rating_id:ratings[i]['rating']}
-                var indi_rating = await knex('IndicatorRating').insert(indicator_rating)
-            }
-        }
-
-        resp[0]["indicators"] = indicators
         resp[0]["attachments"] = attachments
-        resp[0]["ratings"] = ratings
+        resp[0]['indicators_data'] = rated_indicators
         ctx.body = {data:resp}
     }
   } catch (err) {
+    ctx.status = 404
     console.log(err)
+    ctx.body = {error:err}
   }
 })
 
 router.get("/:id", async (ctx) => {
   try {
     
-    const observation = await knex('Evidence').select('*').where({ id: ctx.params.id });
+    const evidences = await knex('Evidence').select('*').where({ id: ctx.params.id });
+    var evidences_w_dependencies = await get_m2m.evidence_w_dependencies(evidences)
 
-    if(observation.length===0){
+    if(evidences.length===0){
         ctx.body = {error:"Does not exist"}
     }
     else
     {
     ctx.body = {
-      data: observation
+      data: evidences_w_dependencies
         };
     }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
 
 router.put('/:id', async (ctx) => {
   try {
-        var id = await knex('Evidence').update(ctx.request.body).where({ id: ctx.params.id})
+        var attachments = ctx.request.body.attachments
+        var rated_indicators = ctx.request.body.indicators_data
+
+        delete ctx.request.body["attachments"];
+        delete ctx.request.body["indicators_data"];
+
+        console.log(ctx.request.body)
+        if(ctx.request.body !== {})
+        {
+            var id = await knex('Evidence').update(ctx.request.body).where({ id: ctx.params.id})
+        }
         var resp = await knex('Evidence').select('*').where({ id: ctx.params.id});
-        ctx.body = {data:resp}
+        var evidence_id = ctx.params.id
+
+
+        //Method 1 to update:
+        rated_indicators_length = rated_indicators.length
+        if(rated_indicators_length!=0)
+        {
+            for(var i=0;i<rated_indicators_length;i++)
+            {
+                const is_present = await knex('IndicatorRating').where({indicator_id:rated_indicators[i]['indicator'], evidence_id:evidence_id, rating_id:rated_indicators[i]['rating']})
+                const is_indicator_present = await knex('IndicatorRating').where({indicator_id:rated_indicators[i]['indicator'], evidence_id:evidence_id})
+                if(is_present!==undefined) ///The entered indicator-rating is already present
+                {
+                    continue;
+                }
+                else if(is_present===undefined && is_indicator_present===undefined) ///New indicator rating
+                {
+                    const new_uuid = await generate_uuid.fn();
+                    var indicator_rating = {id:new_uuid, indicator_id:rated_indicators[i]['indicator'], evidence_id:evidence_id, rating_id:rated_indicators[i]['rating']}
+                    var indi_rating = await knex('IndicatorRating').insert(indicator_rating)
+                }
+                else if(rated_indicators[i]['rating']!== is_indicator_present['rating_id'])///Indicator already present, but different rating
+                {
+                    var indicator_rating = await knex('IndicatorRating').update(rated_indicators[i]['rating']).where({indicator_id:rated_indicators[i]['indicator'], evidence_id:evidence_id})
+                }
+            }
+        }
+        else ///Blank indicator_data -> delete all
+        {
+            const indicator_rating = await knex('IndicatorRating').del().where({evidence_id:evidence_id})
+        }
+
+
+        ///Method 2:
+        attachment_length = attachments.length
+        var delete_all = await knex('evidence_attachments').del().where({evidence_id:evidence_id})
+        if(attachment_length!=0)
+        {
+            for(var i=0; i<attachment_length;i++)
+            {
+                const new_uuid = await generate_uuid.fn();
+                var evidence_attachment = await knex('evidence_attachments').insert({id:new_uuid,evidence_id:evidence_id,attachment_id:attachment_id})
+            }
+        }
+
+        var evidences_w_dependencies = await get_m2m.evidence_w_dependencies(resp)
+        ctx.body = {data:evidences_w_dependencies}
     
   } catch (err) {
+    ctx.status = 404
     console.log(err)
+    ctx.body = {error:err}
   }
 })
 
@@ -133,6 +184,7 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
         
   } catch (err) {
-    console.log(err)
+    ctx.status = 204
+    ctx.body = {error:err}
   }
 })

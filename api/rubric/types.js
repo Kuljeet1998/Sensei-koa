@@ -1,9 +1,9 @@
-const config = require('../knexfile.js')
+const config = require('../../knexfile.js')
 const knex = require('knex')(config)
 
 const Router = require('koa-router');
-const generate_uuid = require('../utils/uuid.js');
-const toslug = require('../utils/toSlug.js');
+const generate_uuid = require('../../utils/uuid.js');
+const toslug = require('../../utils/toSlug.js');
 
 const router = new Router({
     prefix: '/types'
@@ -19,7 +19,8 @@ router.get("/", async (ctx) => {
       data: types
     };
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -43,7 +44,8 @@ router.post("/", async (ctx) => {
         ctx.body = {data:resp}
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -61,7 +63,8 @@ router.get("/:id", async (ctx) => {
         };
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -73,7 +76,8 @@ router.put('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -84,6 +88,7 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 204
+    ctx.body = {error:err}
   }
 })

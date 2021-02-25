@@ -20,7 +20,8 @@ router.get("/", async (ctx) => {
     };
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -50,7 +51,8 @@ router.post("/", koaBody, async (ctx) => {
         ctx.body = {data:resp}
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -70,7 +72,8 @@ router.get("/:id", async (ctx) => {
     }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -82,7 +85,8 @@ router.put('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -93,6 +97,7 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 204
+    ctx.body = {error:err}
   }
 })

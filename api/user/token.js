@@ -1,4 +1,4 @@
-const config = require('../knexfile.js')
+const config = require('../../knexfile.js')
 const knex = require('knex')(config)
 
 const Router = require('koa-router');
@@ -17,6 +17,7 @@ router.get("/", async (ctx) => {
       data: tokens
     };
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })

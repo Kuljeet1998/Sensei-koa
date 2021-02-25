@@ -20,7 +20,8 @@ router.get("/", async (ctx) => {
     };
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -64,7 +65,8 @@ router.post("/", async (ctx) => {
         ctx.body = {data:resp}
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -85,7 +87,8 @@ router.get("/:id", async (ctx) => {
     }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -94,10 +97,12 @@ router.put('/:id', async (ctx) => {
   try {
         var id = await knex('Rubric').update(ctx.request.body).where({ id: ctx.params.id})
         var resp = await knex('Rubric').select('*').where({ id: ctx.params.id});
+        
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -109,6 +114,7 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
         
   } catch (err) {
-    console.log(err)
+    ctx.status = 204
+    ctx.body = {error:err}
   }
 })

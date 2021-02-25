@@ -1,8 +1,8 @@
-const config = require('../knexfile.js')
+const config = require('../../knexfile.js')
 const knex = require('knex')(config)
 
 const Router = require('koa-router');
-const generate_uuid = require('../utils/uuid.js');
+const generate_uuid = require('../../utils/uuid.js');
 
 
 var jwt = require('koa-jwt');
@@ -39,6 +39,7 @@ router.post("/", async (ctx) => {
         }
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })

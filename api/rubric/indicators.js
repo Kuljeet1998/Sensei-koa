@@ -1,17 +1,17 @@
-const config = require('../knexfile.js')
+const config = require('../../knexfile.js')
 const knex = require('knex')(config)
 
 const Router = require('koa-router');
-const generate_uuid = require('../utils/uuid.js');
+const generate_uuid = require('../../utils/uuid.js');
 /*const page = require('../utils/pageable.js');*/
-const page_details = require('../utils/page_details.js')
+const page_details = require('../../utils/page_details.js')
 
 const router = new Router({
     prefix: '/indicators'
 });
 
 
-let get_m2m = require('../utils/indicator_dependencies.js');
+let get_m2m = require('../../utils/indicator_dependencies.js');
 module.exports = router;
 /*const { middleware } = require('koa-pagination');
 const { Pageable, IndexablePage, paginate } = require('@panderalabs/koa-pageable');*/
@@ -45,7 +45,8 @@ router.get("/", async (ctx) => {
         }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -134,7 +135,8 @@ router.post("/", async (ctx) => {
     
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -156,7 +158,8 @@ router.get("/:id", async (ctx) => {
     }
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })
 
@@ -176,7 +179,8 @@ router.get("/:id", async (ctx) => {
         ctx.body = {data:resp}
     }
   } catch (err) {
-    console.log(err)
+    ctx.status = 404
+    ctx.body = {error:err}
   }
 })*/
 
@@ -187,6 +191,7 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    console.log(err)
+    ctx.status = 204
+    ctx.body = {error:err}
   }
 })

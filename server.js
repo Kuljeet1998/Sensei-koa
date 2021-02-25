@@ -13,14 +13,14 @@ var jwt = require('koa-jwt');
 const jwt1 = require('jsonwebtoken');
 const get_secrets = require('./utils/secrets_list.js');
 // Require the Router we defined in books.js
-let user = require('./api/users.js');
-let token = require('./api/token.js');
-let prop = require('./api/propositions.js');
-let subprop = require('./api/subpropositions.js');
-let tag = require('./api/tags.js');
-let type = require('./api/types.js');
-let indicator = require('./api/indicators.js');
-let login = require('./api/login.js');
+let user = require('./api/user/users.js');
+let token = require('./api/user/token.js');
+let prop = require('./api/rubric/propositions.js');
+let subprop = require('./api/rubric/subpropositions.js');
+let tag = require('./api/rubric/tags.js');
+let type = require('./api/rubric/types.js');
+let indicator = require('./api/rubric/indicators.js');
+let login = require('./api/user/login.js');
 let rating_scheme = require('./api/observation/rating_scheme.js');
 let attachment = require('./api/common/attachment.js');
 let account = require('./api/common/accounts.js');
@@ -28,6 +28,7 @@ let rating = require('./api/observation/ratings.js');
 let rubric = require('./api/observation/rubrics.js');
 let group = require('./api/common/groups.js');
 let observation = require('./api/observation/observations.js');
+let evidence = require('./api/observation/evidences.js');
 
 // Use the Router on the sub route /books
 app.use(login.routes());
@@ -57,5 +58,6 @@ app.use(rating.routes());
 app.use(rubric.routes());
 app.use(group.routes());
 app.use(observation.routes());
+app.use(evidence.routes());
 
 app.listen(3000);
