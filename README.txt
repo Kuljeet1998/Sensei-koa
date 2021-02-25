@@ -6,3 +6,9 @@ Steps to setup project locally:
 4. Include knexfile.js in main directory containing DB setup information.
 5. Run migrations using command 'knex migrate:latest'
 5. Install nodemon; use nodemon to run the file 'server.js'
+
+To run APIs:
+1. Create a User w password.
+2. Login w same credentials.
+3. You'll get token as the result.
+4. Use this token in header, Authorization: Bearer `token`
