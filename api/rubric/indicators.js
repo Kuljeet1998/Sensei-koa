@@ -43,7 +43,7 @@ router.get("/", async (ctx) => {
                 pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), parseInt(ctx.query.page))
             }
         }
-    
+
   } catch (err) {
     ctx.status = 404
     ctx.body = {error:err}

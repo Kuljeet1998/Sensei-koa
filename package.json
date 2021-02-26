@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@panderalabs/koa-pageable": "^1.0.1",
+    "async-busboy": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "knex": "^0.21.17",
     "koa": "^2.13.1",

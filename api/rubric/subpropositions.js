@@ -15,12 +15,31 @@ module.exports = router;
 var jwt = require('koa-jwt');
 router.get("/",  async (ctx) => {
   try {
-    const subprops = await knex('subproposition').select('*');
+    var subprops = {}
+    if(ctx.query.sort===undefined || ctx.query.sort ==='')
+    {   
+        subprops = await knex('subproposition').select('*');
+        
+    }
+    else
+    {
+        var sort_by = ctx.query.sort
+        if (sort_by[0]==='-')
+        {   
+            sort_by = sort_by.split('-')[1]
+            subprops = await knex('subproposition').select('*').orderBy(sort_by, 'desc')
+        }
+        else
+        {
+            subprops = await knex('subproposition').select('*').orderBy(sort_by)
+        }
+    }
     ctx.body = {
       data: subprops
     };
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })
@@ -35,10 +54,11 @@ router.post("/", async (ctx) => {
         ctx.body = 'Please enter the data';
     }
     else
-    {   
+    {
         const uuid1 = await generate_uuid.fn();
         ctx.request.body.id = uuid1
         var subprop = await knex('subproposition').insert(ctx.request.body)
+
         var resp = await knex('subproposition').select('*').where({id: uuid1});
         ctx.body = {data:resp}
     }

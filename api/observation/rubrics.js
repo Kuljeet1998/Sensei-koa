@@ -11,16 +11,38 @@ const router = new Router({
 
 module.exports = router;
 
+
+function return_ids(data)
+{   
+    return data['rubric_id']
+}
+
+
 router.get("/", async (ctx) => {
   try {
-    const rubrics = await knex('Rubric').select('*');
+    var rubrics ={}
+    var rubric_id_array = []
+    if(ctx.query.indicator)
+    {   
+        var indicator = ctx.query.indicator
+        var rubric_ids = await knex('rubric_indicators').select('rubric_id').where({indicator_id:indicator})
+        rubric_id_array = rubric_ids.map(return_ids)
+        rubrics = await knex('Rubric').where((builder) =>
+                                builder.whereIn('id', rubric_id_array))
+    }
+
+    else
+    {
+        rubrics = await knex('Rubric').select('*');
+    }
+
     var rubrics_w_indicators = await get_m2m.rubric_w_indicators(rubrics)
     ctx.body = {
-      data: rubrics_w_indicators
+        data: rubrics_w_indicators
     };
-    
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })

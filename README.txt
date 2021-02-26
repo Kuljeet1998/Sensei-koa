@@ -13,4 +13,7 @@ To run APIs:
 3. You'll get token as the result.
 4. Use this token in header, Authorization: Bearer `token`
 
+For attachments:
+1. Create folder: 'uploads' in main directory
+
 **In my local DB, table 'Evidence' has column 'observee_id' instead of 'observation'. So to run w/o error replace all 'observee_id' to 'observation' in /api/observation/evidence.js

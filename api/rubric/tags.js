@@ -12,13 +12,24 @@ module.exports = router;
 
 router.get("/", async (ctx) => {
   try {
-    const tags = await knex('tag').select('*');
+    var tags = {}
+    if(ctx.query.search===undefined || ctx.query.search ==='')
+    {   
+        tags = await knex('tag').select('*');
+        
+    }
+    else
+    {
+        var search = ctx.query.search
+        tags = await knex('tag').select('*').where({title:search})
+    }
     ctx.body = {
       data: tags
     };
     
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })

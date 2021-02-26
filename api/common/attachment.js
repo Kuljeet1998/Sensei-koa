@@ -3,14 +3,14 @@ const knex = require('knex')(config)
 
 const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
-const koaBody = require('koa-body')({multipart: true, uploadDir: '.'})
-var fs = require('fs');
+const koaBody = require('koa-body')
 
 const router = new Router({
     prefix: '/attachments'
 });
 
 module.exports = router;
+
 
 router.get("/", async (ctx) => {
   try {
@@ -26,32 +26,33 @@ router.get("/", async (ctx) => {
 })
 
 
-router.post("/", koaBody, async (ctx) => {
+router.post("/", async (ctx) => {
   try {
     if (
         !ctx.request.body.name
     ) {
+        console.log(ctx.request.body)
         ctx.response.status = 400;
         ctx.body = 'Please enter the data';
     }
     else
     {   
         const uuid1 = await generate_uuid.fn();
-        ctx.request.body.id = uuid1
-        var path = ctx.request.body.path
         var name = ctx.request.body.name
-        console.log(path)
-        console.log(name)
-        var file = await knex('Attachment').insert(ctx.request.body)
-        var resp = await knex('Attachment').select('*').where({id: uuid1});
-        /*await fs.copyFile(path, `${name}`, (err) => {
-                            if (err) throw err;
-                            console.log('source.txt was copied to destination.txt');
-                          });*/
-        ctx.body = {data:resp}
+
+        /*console.log('ctx.file-name', ctx.request.files.file.name);
+        console.log('ctx.file-path', ctx.request.files.file.path);
+        console.log('ctx.file-path', ctx.request.files.file.type);
+        console.log('options',Object.keys(ctx.request.files.file));*/
+
+        var path = ctx.request.files.file.path
+        const attachments = await knex('Attachment').insert({id:uuid1, name:name, path:path});
+        const attachment = await knex('Attachment').select('*').where({id:uuid1})
+        ctx.body = {data:attachment}
     }
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })
