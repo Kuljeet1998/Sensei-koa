@@ -3,7 +3,7 @@ const knex = require('knex')(config)
 
 function return_ids(data)
 {   
-    return data['id']
+    return data['attachment_id']
 }
 
 
@@ -13,7 +13,7 @@ exports.evidence_w_dependencies= async function get_dependencies(evidences)
     {
 
         var rated_indicators = await knex('IndicatorRating').select('*').where({ evidence_id: evidences[i]['id']});
-        var attachments = await knex('evidence_attachments').select('id').where({ evidence_id: evidences[i]['id']});
+        var attachments = await knex('evidence_attachments').select('attachment_id').where({ evidence_id: evidences[i]['id']});
 
         var attachments_array = attachments.map(return_ids)
 

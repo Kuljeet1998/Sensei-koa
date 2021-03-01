@@ -19,9 +19,80 @@ const { Pageable, IndexablePage, paginate } = require('@panderalabs/koa-pageable
 const paginate = require('koa-ctx-paginate')
 
 
+function return_ids(data)
+{   
+    return data['indicator_id']
+}
+
+
 router.get("/", async (ctx) => {
   try {
-        const indicators = await knex('indicator').select('*');
+        var indicators = []
+        var subprop = ctx.query.subproposition
+        var prop = ctx.query.proposition
+        var rubric = ctx.query.rubric
+        var tag = ctx.query.tag
+        var type = ctx.query.type
+        var indicator_subprop = []
+        var indicator_prop = []
+        var indicator_rubric = []
+        var indicator_tag = []
+        var indicator_type = []
+        var print_all = false
+
+        if (subprop)
+        {   
+            subprop = subprop.split(',')
+            indicator_subprop = await knex('indicator_subpropositions').select('indicator_id').where((builder) =>
+                                            builder.whereIn('subproposition_id', subprop))
+            indicator_subprop = indicator_subprop.map(return_ids)
+        }
+        if(prop)
+        {
+            prop = prop.split(',')
+            indicator_prop = await knex('indicator_propositions').select('indicator_id').where((builder) =>
+                                            builder.whereIn('proposition_id', prop))
+            indicator_prop = indicator_prop.map(return_ids)
+        }
+        if(tag)
+        {
+            tag = tag.split(',')
+            indicator_tag = await knex('indicator_tags').select('indicator_id').where((builder) =>
+                                            builder.whereIn('tag_id', tag))
+            indicator_tag = indicator_tag.map(return_ids)
+        }
+        if(type)
+        {
+            type = type.split(',')
+            indicator_type = await knex('indicator_types').select('indicator_id').where((builder) =>
+                                            builder.whereIn('type_id', type))
+            indicator_type = indicator_type.map(return_ids)
+        }
+        if(rubric)
+        {
+            rubric = rubric.split(',')
+            indicator_rubric = await knex('rubric_indicators').select('indicator_id').where((builder) =>
+                                            builder.whereIn('rubric_id', rubric))
+            indicator_rubric = indicator_rubric.map(return_ids)
+        }
+
+        else if((!subprop && !prop && !rubric && !tag && !type) || (subprop=='' || prop=='' || rubric=='' || tag=='' || type==''))
+        {
+            indicators = await knex('indicator').select('*');
+            print_all = true
+        }
+
+        if(print_all==false)
+        {
+            //merge all arrays
+            indicators = [].concat(indicator_subprop, indicator_prop, indicator_tag, indicator_type, indicator_rubric) ;
+            indicators = new Set(indicators); //to remove duplicates
+            indicators = Array.from(indicators); //convert back to array
+            indicators = await knex('indicator').where((builder) =>
+                                            builder.whereIn('id', indicators))
+        }
+
+
         var indicators_w_dependencies = await get_m2m.fn(indicators)
 
         var page_info = await page_details.fn(ctx,indicators_w_dependencies)
@@ -46,6 +117,7 @@ router.get("/", async (ctx) => {
 
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })

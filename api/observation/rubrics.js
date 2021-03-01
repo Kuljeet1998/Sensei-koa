@@ -4,6 +4,8 @@ const knex = require('knex')(config)
 const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
 let get_m2m = require('../../utils/rubric_dependencies.js');
+const page_details = require('../../utils/page_details.js')
+const paginate = require('koa-ctx-paginate')
 
 const router = new Router({
     prefix: '/rubrics'
@@ -20,7 +22,7 @@ function return_ids(data)
 
 router.get("/", async (ctx) => {
   try {
-    var rubrics ={}
+    var rubrics =[]
     var rubric_id_array = []
     if(ctx.query.indicator)
     {   
@@ -31,15 +33,33 @@ router.get("/", async (ctx) => {
                                 builder.whereIn('id', rubric_id_array))
     }
 
-    else
+    if(rubrics.length==0 || ctx.query.indicator=='')
     {
         rubrics = await knex('Rubric').select('*');
     }
 
     var rubrics_w_indicators = await get_m2m.rubric_w_indicators(rubrics)
-    ctx.body = {
-        data: rubrics_w_indicators
-    };
+    
+    var page_info = await page_details.fn(ctx,rubrics_w_indicators)
+    var results = page_info['results']
+    var pageCount = page_info['pageCount']
+    var itemCount = page_info['itemCount']
+
+    if (!ctx.query.page || !ctx.query.limit) {
+        ctx.body = {
+            object: 'list',
+            data: rubrics_w_indicators
+        }
+    }
+    else {
+        ctx.body = {
+            users: results,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), parseInt(ctx.query.page))
+        }
+    }
+
   } catch (err) {
     ctx.status = 404
     console.log(err)

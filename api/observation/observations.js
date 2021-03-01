@@ -3,6 +3,8 @@ const knex = require('knex')(config)
 
 const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
+const page_details = require('../../utils/page_details.js')
+const paginate = require('koa-ctx-paginate')
 
 const router = new Router({
     prefix: '/observations'
@@ -14,12 +16,29 @@ router.get("/", async (ctx) => {
   try {
     const observations = await knex('Observation').select('*');
 
-    ctx.body = {
-      data: observations
-    };
+    var page_info = await page_details.fn(ctx,observations)
+        var results = page_info['results']
+        var pageCount = page_info['pageCount']
+        var itemCount = page_info['itemCount']
+
+        if (!ctx.query.page || !ctx.query.limit) {
+            ctx.body = {
+                object: 'list',
+                data: observations
+            }
+        }
+        else {
+            ctx.body = {
+                users: results,
+                pageCount,
+                itemCount,
+                pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), parseInt(ctx.query.page))
+            }
+        }
     
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })

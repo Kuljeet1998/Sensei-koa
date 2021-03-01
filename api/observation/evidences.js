@@ -11,9 +11,60 @@ const router = new Router({
 let get_m2m = require('../../utils/evidence_dependencies.js');
 module.exports = router;
 
+
+function return_ids(data)
+{   
+    return data['id']
+}
+
+
 router.get("/", async (ctx) => {
-  try {
-    const evidences = await knex('Evidence').select('*');
+  try 
+  {
+    var evidences = []
+    var observations = []
+    var observation = ctx.query.observation
+    var observer = ctx.query.observation__observer
+    var is_empty = false
+
+    if(observation)
+    {
+        observation = observation.split(',')
+        evidences = await knex('Evidence').select('*').where((builder) =>
+                                builder.whereIn('observee_id', observation))
+    }
+    if(observer)
+    {
+        observer = observer.split(',')
+        observations = await knex('Observation').select('id').where((builder) =>
+                                builder.whereIn('observer_id', observer))
+        observations = observations.map(return_ids)
+
+        //check if filter by observaion is also used
+        if(evidences.length>0)
+        {
+            var evidences_wrt_observer = await knex('Evidence').select('*').where((builder) =>
+                                                    builder.whereIn('observee_id', observations))
+
+            evidences = evidences.filter(value => evidences_wrt_observer.includes(value));
+            //set a varibale to inform that evidence array is empty after filtering
+            if(evidences.length==0)
+            {
+                is_empty = true
+            }
+        }
+        else
+        {
+            evidences = await knex('Evidence').select('*').where((builder) =>
+                                builder.whereIn('observee_id', observations))
+        }
+    }
+    if((evidences.length==0 && is_empty==false) || (observation==='' && observer===''))
+    {
+        evidences = await knex('Evidence').select('*');
+    }
+
+    
     var evidences_w_dependencies = await get_m2m.evidence_w_dependencies(evidences)
 
     ctx.body = {

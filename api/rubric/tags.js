@@ -3,6 +3,8 @@ const knex = require('knex')(config)
 
 const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
+const page_details = require('../../utils/page_details.js')
+const paginate = require('koa-ctx-paginate')
 
 const router = new Router({
     prefix: '/tags'
@@ -23,9 +25,27 @@ router.get("/", async (ctx) => {
         var search = ctx.query.search
         tags = await knex('tag').select('*').where({title:search})
     }
-    ctx.body = {
-      data: tags
-    };
+    
+    var page_info = await page_details.fn(ctx,tags)
+    var results = page_info['results']
+    var pageCount = page_info['pageCount']
+    var itemCount = page_info['itemCount']
+
+    if (!ctx.query.page || !ctx.query.limit) {
+        ctx.body = {
+            object: 'list',
+            data: tags
+        }
+    }
+    else {
+        ctx.body = {
+            users: results,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), parseInt(ctx.query.page))
+        }
+    }
+
     
   } catch (err) {
     ctx.status = 404

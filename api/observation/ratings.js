@@ -3,6 +3,8 @@ const knex = require('knex')(config)
 
 const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
+const page_details = require('../../utils/page_details.js')
+const paginate = require('koa-ctx-paginate')
 
 const router = new Router({
     prefix: '/ratings'
@@ -10,15 +12,55 @@ const router = new Router({
 
 module.exports = router;
 
+function return_rating_scheme_ids(data)
+{   
+    return data['rating_scheme_id']
+}
+
 router.get("/", async (ctx) => {
   try {
-    const ratings = await knex('Rating').select('*');
-    ctx.body = {
-      data: ratings
-    };
+    var ratings = {}
+    var rubrics = ctx.query.rating_scheme__rubrics
+    var rating_id_array = []
+    if(rubrics)
+    {   
+        rubrics = rubrics.split(',')
+        var rating_scheme_ids = await knex('Rubric').select('rating_scheme_id').where((builder) =>
+                                builder.whereIn('id', rubrics))
+        rating_scheme_ids = rating_scheme_ids.map(return_rating_scheme_ids)
+        ratings = await knex('Rating').where((builder) =>
+                                builder.whereIn('rating_scheme_id', rating_scheme_ids))
+    }
+
+    if(Object.keys(ratings).length===0 || ratings.length==0 || rubrics=='')
+    {
+        ratings = await knex('Rating').select('*');
+    }
+    
+
+    var page_info = await page_details.fn(ctx,ratings)
+    var results = page_info['results']
+    var pageCount = page_info['pageCount']
+    var itemCount = page_info['itemCount']
+
+    if (!ctx.query.page || !ctx.query.limit) {
+        ctx.body = {
+            object: 'list',
+            data: ratings
+        }
+    }
+    else {
+        ctx.body = {
+            users: results,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), parseInt(ctx.query.page))
+        }
+    }
     
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })
