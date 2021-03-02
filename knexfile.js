@@ -9,6 +9,6 @@ module.exports = {
     user : 'postgres',
     password : 'admin1234',
     database : 'sensei_koa',
-    "use_env_variable": "DATABASE_URL"
+    use_env_variable: "DATABASE_URL"
   }
 }
