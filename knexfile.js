@@ -17,7 +17,8 @@ var config = process.env.DATABASE_URL
 if(config!==undefined)
 {   
     console.log(config)
-    config += '&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
+    /*config += '&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'*/
+    ssl:true
 }
 module.exports ={
     client: 'pg',
