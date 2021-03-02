@@ -1,14 +1,23 @@
 // Update with your config settings.
 
-module.exports = {
+/*module.exports = {
   client: 'pg',
-  version: '7.2',
   connection: {
-/*    host: "localhost",
+    host: "localhost",
     port : 5432,
     user : 'postgres',
     password : 'admin1234',
     database : 'sensei_koa',
-*/    use_env_variable: "postgres://fbcvnfcjsunupi:0406bf83512cf45cc2430a1ff1a2d60194139cab081d98ffbd1deac4488c349f@ec2-3-232-163-23.compute-1.amazonaws.com:5432/d463teparurj33"
+    max: 10,
+    use_env_variable: "postgres://fbcvnfcjsunupi:0406bf83512cf45cc2430a1ff1a2d60194139cab081d98ffbd1deac4488c349f@ec2-3-232-163-23.compute-1.amazonaws.com:5432/d463teparurj33"
   }
+}*/
+
+module.exports ={
+    client: 'pg',
+    connection: process.env.DATABASE_URL || { user: 'postgres', 
+                                                database: 'sensei_koa',
+                                                host: "localhost",
+                                                password : 'admin1234',
+                                                port : 5432}
 }
