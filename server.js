@@ -69,6 +69,7 @@ app.use(koaBody({
 let attachment = require('./api/common/attachment.js');
 app.use(attachment.routes());
 
+console.log(config)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`)})
