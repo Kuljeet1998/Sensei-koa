@@ -13,7 +13,7 @@
   }
 }*/
 
-const config = process.env.DATABASE_URL
+var config = process.env.DATABASE_URL
 if(config!==undefined)
 {
     config += '&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
