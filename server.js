@@ -35,7 +35,7 @@ let evidence = require('./api/observation/evidences.js');
 app.use(login.routes());
 app.use(user.routes());
 app.use(token.routes());
-
+app.use(prop.routes()); 
 function return_password(data)
 {
     return data['password']
@@ -47,7 +47,7 @@ app.use(jwt({ secret: async function secrets()
     array = secret.map(return_password)
     return array;
 }}))
-app.use(prop.routes()); 
+/*app.use(prop.routes());*/ 
 app.use(tag.routes());
 app.use(type.routes());
 app.use(indicator.routes());
