@@ -38,6 +38,7 @@ router.get("/",  async (ctx) => {
     
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })

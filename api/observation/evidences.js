@@ -31,7 +31,7 @@ router.get("/", async (ctx) => {
     {
         observation = observation.split(',')
         evidences = await knex('Evidence').select('*').where((builder) =>
-                                builder.whereIn('observee_id', observation))
+                                builder.whereIn('observation_id', observation))
     }
     if(observer)
     {
@@ -44,7 +44,7 @@ router.get("/", async (ctx) => {
         if(evidences.length>0)
         {
             var evidences_wrt_observer = await knex('Evidence').select('*').where((builder) =>
-                                                    builder.whereIn('observee_id', observations))
+                                                    builder.whereIn('observation_id', observations))
 
             evidences = evidences.filter(value => evidences_wrt_observer.includes(value));
             //set a varibale to inform that evidence array is empty after filtering
@@ -56,7 +56,7 @@ router.get("/", async (ctx) => {
         else
         {
             evidences = await knex('Evidence').select('*').where((builder) =>
-                                builder.whereIn('observee_id', observations))
+                                builder.whereIn('observation_id', observations))
         }
     }
     if((evidences.length==0 && is_empty==false) || (observation==='' && observer===''))
@@ -83,7 +83,7 @@ router.post("/", async (ctx) => {
   try {
     if (
         !ctx.request.body.name ||
-        !ctx.request.body.observee_id ||
+        !ctx.request.body.observation_id ||
         !ctx.request.body.indicators_data
     ) {
         ctx.response.status = 400;

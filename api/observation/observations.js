@@ -16,7 +16,7 @@ router.get("/", async (ctx) => {
   try {
     const observations = await knex('Observation').select('*');
 
-    var page_info = await page_details.fn(ctx,observations)
+        var page_info = await page_details.fn(ctx,observations)
         var results = page_info['results']
         var pageCount = page_info['pageCount']
         var itemCount = page_info['itemCount']

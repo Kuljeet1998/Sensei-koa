@@ -76,7 +76,7 @@ exports.up = function(knex) {
        table.string('description', 500);
        table.datetime('created', { precision: 6 }).defaultTo(knex.fn.now(6));
        table.datetime('updated', { precision: 6 }).defaultTo(knex.fn.now(6));
-       table.uuid('observation', 255).references('id').inTable('Observation');
+       table.uuid('observation_id', 255).references('id').inTable('Observation');
        table.boolean('is_observers_learning').defaultTo(false);
     })
     .createTable('IndicatorRating', function (table) {

@@ -47,13 +47,14 @@ router.post("/", async (ctx) => {
         const uuid1 = await generate_uuid.fn();
         console.log("uuid",uuid1)
         var user = await knex('User').insert({id:uuid1, username:ctx.request.body.username, password:ctx.request.body.password})
-        const uuid2 = await generate_uuid.fn()
-        var token = await knex('Token').insert({key:hash, user_id:uuid1});
+        /*const uuid2 = await generate_uuid.fn()*/
+        /*var token = await knex('Token').insert({key:hash, user_id:uuid1});*/
         var resp = await knex('User').select('*').where({id: uuid1});
         ctx.body = {data:resp}
     }
   } catch (err) {
     ctx.status = 404
+    console.log(err)
     ctx.body = {error:err}
   }
 })

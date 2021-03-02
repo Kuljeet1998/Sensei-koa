@@ -1,14 +1,12 @@
 // Update with your config settings.
 
 module.exports = {
-  "client": "mysql",
-  "connection": {
-    "user" : "root",
-    "password" : "1234",
-    "database" : "Indicator"
-  },
-   "pool": {
-    "max": 5,
-    "min": 0
+  client: 'pg',
+  version: '7.2',
+  connection: {
+    host : '127.0.0.1',
+    user : 'postgres',
+    password : 'admin1234',
+    database : 'sensei_koa'
   }
-};
+}
