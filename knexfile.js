@@ -13,9 +13,14 @@
   }
 }*/
 
+const config = process.env.DATABASE_URL
+if(config!==undefined)
+{
+    config += '&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
+}
 module.exports ={
     client: 'pg',
-    connection: process.env.DATABASE_URL || { user: 'postgres', 
+    connection: config || { user: 'postgres', 
                                                 database: 'sensei_koa',
                                                 host: "localhost",
                                                 password : 'admin1234',
