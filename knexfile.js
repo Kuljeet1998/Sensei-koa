@@ -18,7 +18,7 @@ if(config!==undefined)
 {   
     console.log(config)
     /*config += '&ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'*/
-    ssl:true
+    config += ssl:true
 }
 module.exports ={
     client: 'pg',
