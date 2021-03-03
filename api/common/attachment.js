@@ -4,6 +4,7 @@ const knex = require('knex')(config)
 const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
 const koaBody = require('koa-body')
+const ThumbnailGenerator = require('video-thumbnail-generator').default;
 
 const router = new Router({
     prefix: '/attachments'
@@ -45,8 +46,21 @@ router.post("/", async (ctx) => {
         console.log('ctx.file-path', ctx.request.files.file.type);
         console.log('options',Object.keys(ctx.request.files.file));*/
 
+        var type = ctx.request.files.file.type
         var path = ctx.request.files.file.path
-        const attachments = await knex('Attachment').insert({id:uuid1, name:name, path:path});
+
+        if(type=='video/mp4')
+        {
+            const tg = new ThumbnailGenerator({
+                            sourcePath: './'+path,
+                            thumbnailPath: './thumbnail/',
+                            });
+            var thumbnail = await tg.generateOneByPercent(25)
+            ctx.request.body.thumbnail_path = 'thumbnail/'+thumbnail
+        }
+        ctx.request.body.id = uuid1
+        ctx.request.body.path = path
+        const attachments = await knex('Attachment').insert(ctx.request.body);
         const attachment = await knex('Attachment').select('*').where({id:uuid1})
         ctx.body = {data:attachment}
     }

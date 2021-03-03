@@ -31,7 +31,7 @@ router.get("/", async (ctx) => {
     }
     else {
         ctx.body = {
-            users: results,
+            data: results,
             pageCount,
             itemCount,
             pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), parseInt(ctx.query.page))

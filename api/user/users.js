@@ -17,7 +17,7 @@ module.exports = router;
 router.get("/",  async (ctx) => {
   try {
     let token = ctx.request.headers['authorization'];
-    const users = await knex('User').select('*');
+    const users = await knex('User').select('id','username');
 
     ctx.body = {
       data: users

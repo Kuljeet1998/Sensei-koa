@@ -6,4 +6,7 @@ npm-debug.log
 *.iml
 dist
 knexfile.js
-uploads
+uploads/*
+!uploads/.keep
+thumbnail/*
+!thumbnail/.keep
