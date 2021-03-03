@@ -34,8 +34,7 @@ let evidence = require('./api/observation/evidences.js');
 // Use the Router on the sub route /books
 app.use(login.routes());
 app.use(user.routes());
-app.use(token.routes());
-app.use(prop.routes()); 
+app.use(token.routes()); 
 function return_password(data)
 {
     return data['password']
@@ -47,7 +46,7 @@ app.use(jwt({ secret: async function secrets()
     array = secret.map(return_password)
     return array;
 }}))
-/*app.use(prop.routes());*/ 
+app.use(prop.routes()); 
 app.use(tag.routes());
 app.use(type.routes());
 app.use(indicator.routes());
