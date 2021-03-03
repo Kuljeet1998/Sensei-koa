@@ -50,7 +50,7 @@ const config = {
   host: 'ec2-3-232-163-23.compute-1.amazonaws.com',
   port: '5432',
   database: "d463teparurj33",
-  ssl: true,
+  ssl: { rejectUnauthorized: false },
   sslfactory:"org.postgresql.ssl.NonValidatingFactory"
 };
 
