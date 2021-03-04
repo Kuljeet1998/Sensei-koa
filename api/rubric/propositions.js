@@ -11,7 +11,7 @@ const router = new Router({
 const page_details = require('../../utils/page_details.js')
 
 module.exports = router;
-const paginate = require('koa-ctx-paginate')
+const paginate = require('../../utils/paginate.js');
 
 router.get("/",  async (ctx) => {
   try {

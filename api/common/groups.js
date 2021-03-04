@@ -94,12 +94,32 @@ router.get("/:id", async (ctx) => {
 
 router.put('/:id', async (ctx) => {
   try {
+        var users = ctx.request.body.users
+        delete ctx.request.body["users"];
         var id = await knex('Group').update(ctx.request.body).where({ id: ctx.params.id})
-        var resp = await knex('Group').select('*').where({ id: ctx.params.id});
-        ctx.body = {data:resp}
+        var delete_all = await knex('group_users').del().where({group_id:ctx.params.id})
+
+        users_length = users.length
+        if(users_length!=0)
+        {
+            
+
+            for(var i=0;i<users_length;i++)
+            {
+                const new_uuid = await generate_uuid.fn();
+                var group_user = {id:new_uuid, group_id:ctx.params.id, user_id:users[i]}
+                var group_user_result = await knex('group_users').insert(group_user)
+            }
+        }
+        var group = await knex('Group').select('*').where({id: ctx.params.id});
+        var group_w_users = await get_m2m.group_w_users(group)
+    
+
+    ctx.body = {data:group_w_users}
     
   } catch (err) {
-    ctx.status = 404
+    ctx.status = 404,
+    console.log(err)
     ctx.body = {error:err}
   }
 })

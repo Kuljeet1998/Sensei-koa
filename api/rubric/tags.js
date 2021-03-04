@@ -4,7 +4,7 @@ const knex = require('knex')(config)
 const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
 const page_details = require('../../utils/page_details.js')
-const paginate = require('koa-ctx-paginate')
+const paginate = require('../../utils/paginate.js');
 
 const router = new Router({
     prefix: '/tags'

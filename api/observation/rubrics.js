@@ -5,7 +5,8 @@ const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
 let get_m2m = require('../../utils/rubric_dependencies.js');
 const page_details = require('../../utils/page_details.js')
-const paginate = require('koa-ctx-paginate')
+/*const paginate = require('koa-ctx-paginate')*/
+const paginate = require('../../utils/paginate.js');
 
 const router = new Router({
     prefix: '/rubrics'
@@ -44,10 +45,8 @@ router.get("/", async (ctx) => {
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
-
     if (!ctx.query.page || !ctx.query.limit) {
         ctx.body = {
-            object: 'list',
             data: rubrics_w_indicators
         }
     }
@@ -56,7 +55,7 @@ router.get("/", async (ctx) => {
             data: results,
             pageCount,
             itemCount,
-            pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), parseInt(ctx.query.page))
+            pages: paginate.getArrayPages(ctx)(3, pageCount, parseInt(ctx.query.page))
         }
     }
 
@@ -137,10 +136,27 @@ router.get("/:id", async (ctx) => {
 
 router.put('/:id', async (ctx) => {
   try {
-        var id = await knex('Rubric').update(ctx.request.body).where({ id: ctx.params.id})
-        var resp = await knex('Rubric').select('*').where({ id: ctx.params.id});
         
-        ctx.body = {data:resp}
+
+        var indicators = ctx.request.body.indicators
+        delete ctx.request.body["indicators"];
+        var id = await knex('Rubric').update(ctx.request.body).where({ id: ctx.params.id})
+        var delete_all = await knex('rubric_indicators').del().where({rubric_id:ctx.params.id})
+
+        indicators_length = indicators.length
+        if(indicators_length!=0)
+        {
+            for(var i=0;i<indicators_length;i++)
+            {
+                const new_uuid = await generate_uuid.fn();
+                var data = {id:new_uuid, rubric_id:ctx.params.id, indicator_id:indicators[i]}
+                var resp = await knex('rubric_indicators').insert(data)
+            }
+        }
+        var rubric = await knex('Rubric').select('*').where({id: ctx.params.id});
+        var rubrics_w_indicators = await get_m2m.rubric_w_indicators(rubric)
+
+        ctx.body = {data:rubrics_w_indicators}
     
   } catch (err) {
     ctx.status = 404
