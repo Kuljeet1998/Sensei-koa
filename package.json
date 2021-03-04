@@ -12,6 +12,8 @@
     "@panderalabs/koa-pageable": "^1.0.1",
     "async-busboy": "^1.0.1",
     "bcryptjs": "^2.4.3",
+    "ffmpeg": "0.0.4",
+    "ffprobe": "^1.1.2",
     "fluent-ffmpeg": "^2.1.2",
     "knex": "^0.21.17",
     "koa": "^2.13.1",
