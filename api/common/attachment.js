@@ -5,6 +5,7 @@ const Router = require('koa-router');
 const generate_uuid = require('../../utils/uuid.js');
 const koaBody = require('koa-body')
 const ThumbnailGenerator = require('video-thumbnail-generator').default;
+const get_fullpath = require('../../utils/attachment_fullpath.js')
 
 const router = new Router({
     prefix: '/attachments'
@@ -15,13 +16,19 @@ module.exports = router;
 
 router.get("/", async (ctx) => {
   try {
+    var HOST = ctx.request.header.host
     const attachments = await knex('Attachment').select('*');
+    /*console.log(attachments)
+*/    var attachments_w_fullpath = await get_fullpath.full_path(HOST,attachments)
+    /*console.log(attachment)
+*/
     ctx.body = {
-      data: attachments
+      data: attachments_w_fullpath
     };
     
   } catch (err) {
-    ctx.status = 404
+    ctx.status = 404,
+    console.log(err),
     ctx.body = {error:err}
   }
 })
@@ -45,9 +52,12 @@ router.post("/", async (ctx) => {
         console.log('ctx.file-path', ctx.request.files.file.path);
         console.log('ctx.file-path', ctx.request.files.file.type);
         console.log('options',Object.keys(ctx.request.files.file));*/
-
+        /*console.log('ctx',Object.keys(ctx.request))
+        console.log('-->',ctx.request.header.host)
+        console.log('==',ctx.req)*/
         var type = ctx.request.files.file.type
         var path = ctx.request.files.file.path
+        var HOST = ctx.request.header.host
 
         if(type=='video/mp4')
         {
@@ -62,6 +72,8 @@ router.post("/", async (ctx) => {
         ctx.request.body.path = path
         const attachments = await knex('Attachment').insert(ctx.request.body);
         const attachment = await knex('Attachment').select('*').where({id:uuid1})
+        attachment['path'] = HOST + attachment['path']
+        console.log(attachment)
         ctx.body = {data:attachment}
     }
   } catch (err) {
