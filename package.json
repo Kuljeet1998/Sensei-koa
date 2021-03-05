@@ -21,8 +21,10 @@
     "koa-ctx-paginate": "0.0.6",
     "koa-jwt": "^4.0.0",
     "koa-jwt2": "^1.0.3",
+    "koa-mount": "^4.0.0",
     "koa-pagination": "^4.0.0",
     "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0",
     "mysql": "^2.18.1",
     "pg": "^8.5.1",
     "video-thumbnail-generator": "^1.1.3"

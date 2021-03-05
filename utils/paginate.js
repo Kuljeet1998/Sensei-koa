@@ -43,10 +43,12 @@ function href(ctx) {
       prev = false;
     } else {
       prev = typeof prev === 'boolean' ? prev : false;
-      query.page = prev ? query.page -= 1 : query.page += 1;
-      query.page = query.page < 1 ? 1 : query.page;
+      var page = query.page || 1;
+      page = prev ? page -= 1 : page += 1;
+      page = page < 1 ? 1 : page;
     }
 
+    query.page = page
     // allow overriding querystring params
     // (useful for sorting and filtering)
     // another alias for `_.assign` is `_.extend`
@@ -80,10 +82,21 @@ function getArrayPages(ctx) {
       var start = Math.max(1, currentPage < limit - 1 ? 1 : end - limit + 1);
       var pages = [];
       for (var i = start; i <= end; i++) {
+        
+        if(ctx.query.page!==undefined)
+        {
         pages.push({
           number: i,
           url: exports.href(ctx)().replace('page=' + currentPage + 1, 'page=' + i)
         });
+        }
+        else
+        {
+          pages.push({
+          number: i,
+          url: exports.href(ctx)().replace('page=' + (currentPage + 1), 'page=' + i)
+        });
+        }
       }
       return pages;
     }

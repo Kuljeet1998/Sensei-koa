@@ -5,9 +5,11 @@ const knex = require('knex')(config)
 exports.fn= async function page_details(ctx,data)
 {
 const itemCount = data.length
-const pageCount = Math.ceil(itemCount / parseInt(ctx.query.limit));
-const start = (parseInt(ctx.query.page)-1)*parseInt(ctx.query.limit)
-const results = data.slice(start,start+parseInt(ctx.query.limit));
+var limit = ctx.query.limit || 3
+var page = ctx.query.page || 1
+const pageCount = Math.ceil(itemCount / parseInt(limit));
+const start = (parseInt(page)-1)*parseInt(limit)
+const results = data.slice(start,start+parseInt(limit));
 
 return {'pageCount':pageCount,'itemCount':itemCount,'results':results}
 }

@@ -16,12 +16,9 @@ module.exports = router;
 
 router.get("/", async (ctx) => {
   try {
-    var HOST = ctx.request.header.host
+    var HOST = ctx.request.protocol + "://"+ ctx.request.header.host
     const attachments = await knex('Attachment').select('*');
-    /*console.log(attachments)
-*/    var attachments_w_fullpath = await get_fullpath.full_path(HOST,attachments)
-    /*console.log(attachment)
-*/
+    var attachments_w_fullpath = await get_fullpath.full_path(HOST,attachments)
     ctx.body = {
       data: attachments_w_fullpath
     };
@@ -52,12 +49,12 @@ router.post("/", async (ctx) => {
         console.log('ctx.file-path', ctx.request.files.file.path);
         console.log('ctx.file-path', ctx.request.files.file.type);
         console.log('options',Object.keys(ctx.request.files.file));*/
-        /*console.log('ctx',Object.keys(ctx.request))
-        console.log('-->',ctx.request.header.host)
-        console.log('==',ctx.req)*/
+        /*console.log('ctx',Object.keys(ctx.request))*/
+        /*console.log('-->',ctx.request.header)*/
+        /*console.log('==',ctx.request.protocol)*/
         var type = ctx.request.files.file.type
         var path = ctx.request.files.file.path
-        var HOST = ctx.request.header.host
+        /*var HOST = ctx.request.header.host*/
 
         if(type=='video/mp4')
         {
@@ -69,12 +66,17 @@ router.post("/", async (ctx) => {
             ctx.request.body.thumbnail_path = 'thumbnail/'+thumbnail
         }
         ctx.request.body.id = uuid1
+        type = type.split('/')
+        type = type[1]
+        
         ctx.request.body.path = path
+
         const attachments = await knex('Attachment').insert(ctx.request.body);
         const attachment = await knex('Attachment').select('*').where({id:uuid1})
-        attachment['path'] = HOST + attachment['path']
-        console.log(attachment)
-        ctx.body = {data:attachment}
+        
+        var HOST = ctx.request.protocol + "://"+ ctx.request.header.host
+        var attachments_w_fullpath = await get_fullpath.full_path(HOST,attachment)
+        ctx.body = {data:attachments_w_fullpath}
     }
   } catch (err) {
     ctx.status = 404
@@ -87,14 +89,16 @@ router.get("/:id", async (ctx) => {
   try {
     
     const attachment = await knex('Attachment').select('*').where({ id: ctx.params.id });
-
+    var HOST = ctx.request.protocol + "://"+ ctx.request.header.host
+    var attachments_w_fullpath = await get_fullpath.full_path(HOST,attachment)
+    
     if(attachment.length===0){
         ctx.body = {error:"Does not exist"}
     }
     else
     {
     ctx.body = {
-      data: attachment
+      data: attachments_w_fullpath
         };
     }
     

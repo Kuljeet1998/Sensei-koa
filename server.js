@@ -1,4 +1,5 @@
 // app.js
+'use strict';
 const Koa = require('koa');
 const koaBody = require('koa-body');
 
@@ -6,6 +7,9 @@ const app = new Koa();
 
 const config = require('./knexfile.js')
 const knex = require('knex')(config)
+var serve = require('koa-static');
+
+app.use(serve('./'));
 
 // Set up body parsing middleware
 app.use(koaBody());
@@ -61,7 +65,8 @@ app.use(evidence.routes());
 
 
 app.use(koaBody({
-   formidable:{uploadDir: './uploads'},    //This is where the files would come
+   formidable:{uploadDir: './uploads',
+                keepExtensions: true},    //This is where the files would come
    multipart: true,
    urlencoded: true
 }));

@@ -17,17 +17,22 @@ router.get("/",  async (ctx) => {
   try {
     const props = await knex('proposition').select('*');
 
-    if (!ctx.query.page || !ctx.query.limit) {
-            ctx.body = {
-                object: 'list',
-                data: props
-            }
+    var page_info = await page_details.fn(ctx,props)
+    var results = page_info['results']
+    var pageCount = page_info['pageCount']
+    var itemCount = page_info['itemCount']
+
+    if (!ctx.query.page) {
+        ctx.body = {
+            data: results,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), 1)
         }
+    }
+
     else {
-            var page_info = await page_details.fn(ctx,props)
-            var results = page_info['results']
-            var pageCount = page_info['pageCount']
-            var itemCount = page_info['itemCount']
+            
             ctx.body = {
                 data: results,
                 pageCount,

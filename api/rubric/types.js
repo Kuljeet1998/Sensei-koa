@@ -23,10 +23,12 @@ router.get("/", async (ctx) => {
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
 
-    if (!ctx.query.page || !ctx.query.limit) {
+    if (!ctx.query.page) {
         ctx.body = {
-            object: 'list',
-            data: types
+            data: results,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(ctx)(3, parseInt(pageCount), 1)
         }
     }
     else {
