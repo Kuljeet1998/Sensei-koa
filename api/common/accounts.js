@@ -34,7 +34,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
         var account = await knex('Account').insert(ctx.request.body)
         var resp = await knex('Account').select('*').where({id: uuid1});

@@ -43,11 +43,12 @@ router.post("/", async (ctx) => {
 		else
 		{   
 				const password = ctx.request.body.password
-				const uuid1 = await generate_uuid.fn();
-				
-				var token = jwt1.sign({foo: 'bar'}, password);
+				const uuid1 = await generate_uuid.get_uuid();
+				var username = ctx.request.body.username
+				var token = jwt1.sign({username: ctx.request.body.password}, 'password'); //'password' is the secret-key which will be added in a file that's not in repo like secrets.json in django
+
 				var user = await knex('User').insert({id:uuid1, username:ctx.request.body.username, password:token})
-				/*const uuid2 = await generate_uuid.fn()*/
+				/*const uuid2 = await generate_uuid.get_uuid()*/
 				/*var token = await knex('Token').insert({key:hash, user_id:uuid1});*/
 				var resp = await knex('User').select('*').where({id: uuid1});
 				ctx.body = {data:resp}

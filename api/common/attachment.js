@@ -36,13 +36,13 @@ router.post("/", async (ctx) => {
     if (
         !ctx.request.body.name
     ) {
-        console.log(ctx.request.body)
+
         ctx.response.status = 400;
         ctx.body = 'Please enter the data';
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         var name = ctx.request.body.name
 
         /*console.log('ctx.file-name', ctx.request.files.file.name);

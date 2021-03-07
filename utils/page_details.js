@@ -2,7 +2,7 @@
 const config = require('../knexfile.js')
 const knex = require('knex')(config)
 
-exports.fn= async function page_details(ctx,data)
+exports.get_page_info= async function page_details(ctx,data)
 {
 const itemCount = data.length
 var limit = ctx.query.limit || 3

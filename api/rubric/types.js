@@ -18,7 +18,7 @@ router.get("/", async (ctx) => {
   try {
     const types = await knex('type').select('*');
     
-    var page_info = await page_details.fn(ctx,types)
+    var page_info = await page_details.get_page_info(ctx,types)
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
@@ -57,9 +57,9 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
-        slug = await toslug.fn(ctx.request.body.title)
+        slug = await toslug.get_slug(ctx.request.body.title)
         ctx.request.body.slug = slug
         var type = await knex('type').insert(ctx.request.body)
         var resp = await knex('type').select('*').where({id: uuid1});

@@ -17,7 +17,7 @@ router.get("/",  async (ctx) => {
   try {
     const props = await knex('proposition').select('*');
 
-    var page_info = await page_details.fn(ctx,props)
+    var page_info = await page_details.get_page_info(ctx,props)
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
@@ -59,8 +59,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
-        console.log("uuid",uuid1)
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
         var prop = await knex('proposition').insert(ctx.request.body)
         var resp = await knex('proposition').select('*').where({id: uuid1});

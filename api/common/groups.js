@@ -40,7 +40,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
         var users = ctx.request.body.users
 
@@ -53,7 +53,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<users_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var group_user_data = {id:new_uuid, user_id:users[i], group_id:uuid1}
                 var group_user = await knex('group_users').insert(group_user_data)
             }
@@ -106,7 +106,7 @@ router.put('/:id', async (ctx) => {
 
             for(var i=0;i<users_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var group_user = {id:new_uuid, group_id:ctx.params.id, user_id:users[i]}
                 var group_user_result = await knex('group_users').insert(group_user)
             }

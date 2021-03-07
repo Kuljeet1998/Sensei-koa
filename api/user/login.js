@@ -27,19 +27,26 @@ router.post("/", async (ctx) => {
     else
     {   
         password = ctx.request.body.password
+        var username = ctx.request.body.username
+
         check_password = await knex('User').select('password').where({username:ctx.request.body.username});
-        if (check_password[0]['password'] !== password)
+ 
+        var token = check_password[0]['password']
+        var decoded_password = jwt1.decode(check_password[0]['password'])
+        decoded_password = decoded_password.username
+
+        if (password !== decoded_password)
         {   
             ctx.body = {error:"password doesn't match"}
         }
         else
         {
-            token = jwt1.sign({foo: 'bar'}, password);
             ctx.body ={token:token}
         }
     }
   } catch (err) {
-    ctx.status = 404
-    ctx.body = {error:err}
+    ctx.status = 404,
+    console.log(err),
+    ctx.body = {error:"Incorrect username"}
   }
 })

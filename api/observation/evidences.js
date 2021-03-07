@@ -69,7 +69,7 @@ router.get("/", async (ctx) => {
     
     var evidences_w_dependencies = await get_m2m.evidence_w_dependencies(evidences)
 
-    var page_info = await page_details.fn(ctx,evidences_w_dependencies)
+    var page_info = await page_details.get_page_info(ctx,evidences_w_dependencies)
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
@@ -111,7 +111,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
 
         var attachments = ctx.request.body.attachments
@@ -128,7 +128,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<rated_indicators_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_rating = {id:new_uuid, indicator_id:rated_indicators[i]['indicator'], evidence_id:uuid1, rating_id:rated_indicators[i]['rating']}
                 var indi_rating = await knex('IndicatorRating').insert(indicator_rating)
             }
@@ -139,7 +139,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<attachment_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var evidence_attachment = {id:new_uuid, attachment_id:attachments[i], evidence_id:uuid1}
                 var evidence_att = await knex('evidence_attachments').insert(evidence_attachment)
             }
@@ -196,7 +196,7 @@ router.put('/:id', async (ctx) => {
         {
             for(var i=0;i<attachments_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var data = {id:new_uuid, evidence_id:ctx.params.id, attachment_id:attachments[i]}
                 var resp = await knex('evidence_attachments').insert(data)
             }
@@ -207,7 +207,7 @@ router.put('/:id', async (ctx) => {
         {
             for(var i=0;i<indicators_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var data = {id:new_uuid, evidence_id:ctx.params.id, indicator_id:indicators[i]}
                 var resp = await knex('evidence_indicators').insert(data)
             }

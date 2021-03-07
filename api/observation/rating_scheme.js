@@ -15,7 +15,7 @@ module.exports = router;
 router.get("/", async (ctx) => {
   try {
     const RatingSchemes = await knex('RatingScheme').select('*');
-    var page_info = await page_details.fn(ctx,RatingSchemes)
+    var page_info = await page_details.get_page_info(ctx,RatingSchemes)
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
@@ -55,8 +55,8 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
-        console.log("uuid",uuid1)
+        const uuid1 = await generate_uuid.get_uuid();
+
         ctx.request.body.id = uuid1
         var user = await knex('RatingScheme').insert(ctx.request.body)
         var resp = await knex('RatingScheme').select('*').where({id: uuid1});

@@ -41,7 +41,7 @@ router.get("/", async (ctx) => {
 
     var rubrics_w_indicators = await get_m2m.rubric_w_indicators(rubrics)
     
-    var page_info = await page_details.fn(ctx,rubrics_w_indicators)
+    var page_info = await page_details.get_page_info(ctx,rubrics_w_indicators)
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
@@ -84,7 +84,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
         var indicators = ctx.request.body.indicators
 
@@ -98,7 +98,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<indicator_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var rubric_indicator = {id:new_uuid, indicator_id:indicators[i], rubric_id:uuid1}
                 var rubric_indi = await knex('rubric_indicators').insert(rubric_indicator)
             }
@@ -152,7 +152,7 @@ router.put('/:id', async (ctx) => {
         {
             for(var i=0;i<indicators_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var data = {id:new_uuid, rubric_id:ctx.params.id, indicator_id:indicators[i]}
                 var resp = await knex('rubric_indicators').insert(data)
             }

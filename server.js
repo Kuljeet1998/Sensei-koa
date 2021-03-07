@@ -15,10 +15,10 @@ app.use(serve('./'));
 app.use(koaBody());
 var jwt = require('koa-jwt');
 const jwt1 = require('jsonwebtoken');
-const get_secrets = require('./utils/secrets_list.js');
+
 // Require the Router we defined in books.js
 let user = require('./api/user/users.js');
-let token = require('./api/user/token.js');
+let token = require('./api/user/token.js'); //not being used
 let prop = require('./api/rubric/propositions.js');
 let subprop = require('./api/rubric/subpropositions.js');
 let tag = require('./api/rubric/tags.js');
@@ -38,18 +38,9 @@ let evidence = require('./api/observation/evidences.js');
 // Use the Router on the sub route /books
 app.use(login.routes());
 app.use(user.routes());
-app.use(token.routes()); 
-function return_password(data)
-{
-    return data['password']
-}
-app.use(jwt({ secret: async function secrets()
-{
-    var secret = await get_secrets.fn()
-    var array = []
-    array = secret.map(return_password)
-    return array;
-}}))
+app.use(token.routes()); //Not being used now
+
+app.use(jwt({secret:'password'})) //will add the secret key i.e. 'password' to another file which is not in repo like secrets.json in django  
 app.use(prop.routes()); 
 app.use(tag.routes());
 app.use(type.routes());

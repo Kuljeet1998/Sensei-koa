@@ -38,7 +38,7 @@ router.get("/", async (ctx) => {
     }
     
 
-    var page_info = await page_details.fn(ctx,ratings)
+    var page_info = await page_details.get_page_info(ctx,ratings)
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
@@ -81,7 +81,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
         var rating = await knex('Rating').insert(ctx.request.body)
         var resp = await knex('Rating').select('*').where({id: uuid1});

@@ -89,9 +89,9 @@ router.get("/", async (ctx) => {
         }
 
 
-        var indicators_w_dependencies = await get_m2m.fn(indicators)
+        var indicators_w_dependencies = await get_m2m.indicator_dependencies(indicators)
 
-        var page_info = await page_details.fn(ctx,indicators_w_dependencies)
+        var page_info = await page_details.get_page_info(ctx,indicators_w_dependencies)
         var results = page_info['results']
         var pageCount = page_info['pageCount']
         var itemCount = page_info['itemCount']
@@ -115,7 +115,7 @@ router.get("/", async (ctx) => {
         }
 
   } catch (err) {
-    ctx.status = 404
+    ctx.status = 404,
     console.log(err)
     ctx.body = {error:err}
   }
@@ -132,7 +132,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
 
         var tags = ctx.request.body.tags
@@ -153,7 +153,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<tags_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_tag = {id:new_uuid, indicator_id:uuid1, tag_id:tags[i]}
                 var indi_tag = await knex('indicator_tags').insert(indicator_tag)
             }
@@ -165,7 +165,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<props_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_proposition = {id:new_uuid, indicator_id:uuid1, proposition_id:propositions[i]}
                 var indi_prop = await knex('indicator_propositions').insert(indicator_proposition)
             }
@@ -177,7 +177,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<subprops_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_subproposition = {id:new_uuid, indicator_id:uuid1, subproposition_id:subprops[i]}
                 var indi_subprop = await knex('indicator_subpropositions').insert(indicator_subproposition)
             }
@@ -189,7 +189,7 @@ router.post("/", async (ctx) => {
         {
             for(var i=0;i<types_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_type = {id:new_uuid, indicator_id:uuid1, type_id:types[i]}
                 var indi_type = await knex('indicator_types').insert(indicator_type)
             }
@@ -206,7 +206,8 @@ router.post("/", async (ctx) => {
     
     }
   } catch (err) {
-    ctx.status = 404
+    ctx.status = 404,
+    console.log(err),
     ctx.body = {error:err}
   }
 })
@@ -216,7 +217,7 @@ router.get("/:id", async (ctx) => {
   try {
 
     const indicator = await knex('indicator').select('*').where({ id: ctx.params.id });
-    var indicators_w_dependencies = await get_m2m.fn(indicator)
+    var indicators_w_dependencies = await get_m2m.indicator_dependencies(indicator)
     
     if(indicator.length===0){
         ctx.body = {error:"Does not exist"}
@@ -229,7 +230,8 @@ router.get("/:id", async (ctx) => {
     }
     
   } catch (err) {
-    ctx.status = 404
+    ctx.status = 404,
+    console.log(err),
     ctx.body = {error:err}
   }
 })
@@ -264,7 +266,7 @@ router.put('/:id', async (ctx) => {
 
             for(var i=0;i<tags_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_tag = {id:new_uuid, indicator_id:ctx.params.id, tag_id:tags[i]}
                 var indi_tag = await knex('indicator_tags').insert(indicator_tag)
             }
@@ -278,7 +280,7 @@ router.put('/:id', async (ctx) => {
 
             for(var i=0;i<props_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_proposition = {id:new_uuid, indicator_id:ctx.params.id, proposition_id:propositions[i]}
                 var indi_prop = await knex('indicator_propositions').insert(indicator_proposition)
             }
@@ -291,7 +293,7 @@ router.put('/:id', async (ctx) => {
             
             for(var i=0;i<subprops_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_subproposition = {id:new_uuid, indicator_id:ctx.params.id, subproposition_id:subprops[i]}
                 var indi_subprop = await knex('indicator_subpropositions').insert(indicator_subproposition)
             }
@@ -304,7 +306,7 @@ router.put('/:id', async (ctx) => {
             
             for(var i=0;i<types_length;i++)
             {
-                const new_uuid = await generate_uuid.fn();
+                const new_uuid = await generate_uuid.get_uuid();
                 var indicator_type = {id:new_uuid, indicator_id:ctx.params.id, type_id:types[i]}
                 var indi_type = await knex('indicator_types').insert(indicator_type)
             }
@@ -312,7 +314,7 @@ router.put('/:id', async (ctx) => {
 
         
         var resp = await knex('indicator').select('*').where({id: ctx.params.id});
-        var indicators_w_dependencies = await get_m2m.fn(resp)
+        var indicators_w_dependencies = await get_m2m.indicator_dependencies(resp)
     
 
     ctx.body = {data:indicators_w_dependencies}

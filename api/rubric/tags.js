@@ -26,7 +26,7 @@ router.get("/", async (ctx) => {
         tags = await knex('tag').select('*').where({title:search})
     }
     
-    var page_info = await page_details.fn(ctx,tags)
+    var page_info = await page_details.get_page_info(ctx,tags)
     var results = page_info['results']
     var pageCount = page_info['pageCount']
     var itemCount = page_info['itemCount']
@@ -67,7 +67,7 @@ router.post("/", async (ctx) => {
     }
     else
     {   
-        const uuid1 = await generate_uuid.fn();
+        const uuid1 = await generate_uuid.get_uuid();
         ctx.request.body.id = uuid1
         var user = await knex('tag').insert(ctx.request.body)
         var resp = await knex('tag').select('*').where({id: uuid1});
