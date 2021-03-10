@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
+    "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=2",
     "dev": "nodemon server.js"
   },
   "author": "Kuljeet",
