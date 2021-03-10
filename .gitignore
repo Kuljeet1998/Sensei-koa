@@ -8,3 +8,6 @@ dist
 knexfile.js
 uploads/*
 thumbnail/*
+.adminbro
+migrations/20210310164152_migrate_data.js
+migrations/20210310172827_migrate_new.js

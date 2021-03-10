@@ -109,7 +109,8 @@ router.delete('/:id', async (ctx) => {
         ctx.body = {data:resp}
     
   } catch (err) {
-    ctx.status = 204
+    ctx.status = 204,
+    console.log(err)
     ctx.body = {error:err}
   }
 })

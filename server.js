@@ -9,6 +9,46 @@ const config = require('./knexfile.js')
 const knex = require('knex')(config)
 var serve = require('koa-static');
 
+//koa-admin config
+/*const AdminBro = require('admin-bro')
+const { buildRouter } = require('@admin-bro/koa')
+const AdminBroSequelize = require('@admin-bro/sequelize')
+AdminBro.registerAdapter(AdminBroSequelize)
+
+const run = async () => {
+ 
+  const { Client } = require('pg');
+  const pg = require('pg')
+  const pool = new pg.Pool(config);
+
+    var client = new Client({
+                    user: 'postgres', 
+                    database: 'sensei_koa',
+                    host: "localhost",
+                    password : 'admin1234',
+                    port : 5432,
+                    useNewUrlParser: true,
+    });
+
+
+const props = await knex('proposition')
+const PROPS = require('./api/rubric/propositions.js');
+
+const adminBro = new AdminBro({
+  Database: [pool],
+  rootPath: '/admin',
+})
+
+const router = buildRouter(adminBro, app)
+app
+  .use(router.routes())
+  .use(router.allowedMethods())
+app.use(PROPS.routes()); 
+
+}*/
+//---------------------
+
+
 app.use(serve('./'));
 
 // Set up body parsing middleware
@@ -40,7 +80,7 @@ app.use(login.routes());
 app.use(user.routes());
 app.use(token.routes()); //Not being used now
 
-app.use(jwt({secret:'password'})) //will add the secret key i.e. 'password' to another file which is not in repo like secrets.json in django  
+app.use(jwt({secret:'password'}).unless({ path: [/^\/admin/] })) //will add the secret key i.e. 'password' to another file which is not in repo like secrets.json in django  
 app.use(prop.routes()); 
 app.use(tag.routes());
 app.use(type.routes());
@@ -66,5 +106,8 @@ app.use(attachment.routes());
 
 console.log(config)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`)})
+const server = app.listen(PORT, () => {
+                console.log(`Server is running on port ${PORT}.`)})
+/*console.log("SERVER",server)*/
+module.exports = server;
+/*run()*/

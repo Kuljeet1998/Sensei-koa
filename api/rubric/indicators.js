@@ -328,17 +328,18 @@ router.put('/:id', async (ctx) => {
 
 router.delete('/:id', async (ctx) => {
   try {
-        var id = await knex('indicator').del().where({ id: ctx.params.id})
+        
         var delete_tags = await knex('indicator_tags').del().where({indicator_id:ctx.params.id})
         var delete_propositions = await knex('indicator_propositions').del().where({indicator_id:ctx.params.id})
         var delete_subprops = await knex('indicator_subpropositions').del().where({indicator_id:ctx.params.id})
         var delete_types = await knex('indicator_types').del().where({indicator_id:ctx.params.id})
+        var id = await knex('indicator').del().where({ id: ctx.params.id})
         var resp = await knex('indicator').select('*').where({ id: ctx.params.id});
         ctx.body = {data:resp}
     
   } catch (err) {
-    ctx.status = 204
-    console.log(err)
+    ctx.status = 204,
+    console.log(err),
     ctx.body = {error:err}
   }
 })
