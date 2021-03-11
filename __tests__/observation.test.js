@@ -161,19 +161,19 @@ describe('test POST APIs', () => {
 
  //delete evidence
  var delete_evidence = await supertest.delete(`/evidences/${evidence_id}`).set({ Authorization: TOKEN })
- expect(delete_evidence.status).toEqual(204);
+ expect(delete_evidence.status).toEqual(200);
  //delete observation
  var delete_observation = await supertest.delete(`/observations/${observation_id}`).set({ Authorization: TOKEN })
- expect(delete_observation.status).toEqual(204);
+ expect(delete_observation.status).toEqual(200);
  //delete rubrics
  var delete_rubrics = await supertest.delete(`/rubrics/${rubric_id}`).set({ Authorization: TOKEN })
- expect(delete_rubrics.status).toEqual(204);
+ expect(delete_rubrics.status).toEqual(200);
  //delete ratings
  var delete_rating = await supertest.delete(`/ratings/${rating_id}`).set({ Authorization: TOKEN })
- expect(delete_rating.status).toEqual(204);
+ expect(delete_rating.status).toEqual(200);
  //delete rating-scheme
  var delete_evidence = await supertest.delete(`/rating-scheme/${rating_scheme_id}`).set({ Authorization: TOKEN })
- expect(delete_evidence.status).toEqual(204);
+ expect(delete_evidence.status).toEqual(200);
 
  })
 });

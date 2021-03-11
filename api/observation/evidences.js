@@ -227,13 +227,15 @@ router.put('/:id', async (ctx) => {
 
 router.delete('/:id', async (ctx) => {
   try {
-        var indicator_rating = await('IndicatorRating').del().where({ evidence_id : ctx.params.id })
+        var evidence_id = ctx.params.id
+        var indicator_rating = await knex('IndicatorRating').where({ evidence_id : evidence_id }).del()
         var id = await knex('Evidence').del().where({ id: ctx.params.id})
         var resp = await knex('Evidence').select('*').where({ id: ctx.params.id});
         ctx.body = {data:resp}
         
   } catch (err) {
-    ctx.status = 204
+    ctx.status = 204,
+    console.log(err)
     ctx.body = {error:err}
   }
 })
